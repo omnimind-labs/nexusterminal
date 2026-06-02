@@ -27,7 +27,7 @@ export default function QuickStats() {
   }, []);
 
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-3 gap-2 h-full content-start overflow-y-auto">
       {STATS.map((stat, i) => (
         <motion.div
           key={stat.label}

@@ -4,12 +4,12 @@ import { AreaChart, Area, ResponsiveContainer, YAxis } from 'recharts';
 
 function TrafficChart({ data, color, label, value }) {
   return (
-    <div className="flex-1">
-      <div className="flex items-center justify-between mb-1">
+    <div className="flex-1 flex flex-col min-h-0">
+      <div className="flex items-center justify-between mb-1 flex-shrink-0">
         <span className="font-display text-[8px] uppercase tracking-widest text-muted-foreground">{label}</span>
         <span className="font-mono text-[10px]" style={{ color }}>{value}</span>
       </div>
-      <div className="h-12 w-full">
+      <div className="flex-1 min-h-0" style={{ minHeight: 40 }}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data}>
             <defs>
@@ -67,18 +67,18 @@ export default function NetworkMonitor() {
   };
 
   return (
-    <div className="h-full flex flex-col gap-3">
-      <div className="flex gap-3">
+    <div className="h-full flex flex-col gap-2">
+      <div className="flex gap-3 flex-1 min-h-0" style={{ maxHeight: '45%' }}>
         <TrafficChart data={downloadData} color="hsl(185, 100%, 50%)" label="Download" value={`${dlSpeed} MB/s`} />
         <TrafficChart data={uploadData} color="hsl(260, 100%, 65%)" label="Upload" value={`${ulSpeed} MB/s`} />
       </div>
 
-      <div className="flex-1 min-h-0">
-        <div className="flex items-center justify-between mb-1.5">
+      <div className="flex-1 min-h-0 flex flex-col">
+        <div className="flex items-center justify-between mb-1.5 flex-shrink-0">
           <span className="font-display text-[8px] uppercase tracking-widest text-muted-foreground">Active Connections</span>
           <span className="font-mono text-[9px] text-primary/50">{connections.length} active</span>
         </div>
-        <div className="space-y-1 overflow-y-auto max-h-28">
+        <div className="space-y-1 overflow-y-auto flex-1 min-h-0">
           {connections.map((conn, i) => (
             <motion.div
               key={i}

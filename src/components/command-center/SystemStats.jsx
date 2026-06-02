@@ -94,6 +94,7 @@ export default function SystemStats() {
     return () => clearInterval(interval);
   }, []);
 
+  // Keep cores capped to available display space
   const formatUptime = (s) => {
     const h = Math.floor(s / 3600);
     const m = Math.floor((s % 3600) / 60);
