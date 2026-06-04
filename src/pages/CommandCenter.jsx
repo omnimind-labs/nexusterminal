@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Activity, Terminal as TermIcon, Globe, FolderOpen, Cpu, Network, BarChart3, Layers, Sparkles, ServerIcon, FileCode } from 'lucide-react';
+import { Activity, Terminal as TermIcon, Globe, FolderOpen, Cpu, Network, BarChart3, Layers, Sparkles, ServerIcon, FileCode, FolderSearch } from 'lucide-react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
 import CyberPanel from '../components/command-center/CyberPanel';
@@ -17,6 +17,7 @@ import AIAssistant from '../components/command-center/AIAssistant';
 import SSHManager from '../components/command-center/SSHManager';
 import FilePreview from '../components/command-center/FilePreview';
 import WebBrowser from '../components/command-center/WebBrowser';
+import FileExplorerWindow from '../components/command-center/FileExplorerWindow';
 import TabBar from '../components/command-center/TabBar';
 
 function ResizeHandle({ direction = 'horizontal' }) {
@@ -234,23 +235,49 @@ function BrowserLayout() {
   );
 }
 
+function FilesLayout() {
+  return (
+    <PanelGroup direction="horizontal" style={{ height: '100%' }}>
+      <Panel defaultSize={65} minSize={40}>
+        <PC><CyberPanel title="File Explorer" icon={FolderOpen} className="h-full" delay={0.1}><FileExplorerWindow /></CyberPanel></PC>
+      </Panel>
+      <ResizeHandle />
+      <Panel defaultSize={35} minSize={22}>
+        <PC>
+          <PanelGroup direction="vertical" style={{ height: '100%' }}>
+            <Panel defaultSize={55} minSize={30}>
+              <PC><CyberPanel title="Terminal" icon={TermIcon} className="h-full" delay={0.2}><Terminal /></CyberPanel></PC>
+            </Panel>
+            <ResizeHandle direction="vertical" />
+            <Panel defaultSize={45} minSize={25}>
+              <PC><CyberPanel title="File Preview" icon={FileCode} className="h-full" delay={0.3}><FilePreview /></CyberPanel></PC>
+            </Panel>
+          </PanelGroup>
+        </PC>
+      </Panel>
+    </PanelGroup>
+  );
+}
+
 const TAB_LAYOUTS = {
   dashboard: DashboardLayout,
   ai: AILayout,
   ssh: SSHLayout,
   preview: PreviewLayout,
   browser: BrowserLayout,
+  files: FilesLayout,
 };
 
 const DEFAULT_TABS = [
   { id: 'tab-1', label: 'Dashboard', type: 'dashboard' },
   { id: 'tab-2', label: 'WAVE-AI', type: 'ai' },
   { id: 'tab-3', label: 'SSH', type: 'ssh' },
-  { id: 'tab-4', label: 'Preview', type: 'preview' },
-  { id: 'tab-5', label: 'Browser', type: 'browser' },
+  { id: 'tab-4', label: 'Files', type: 'files' },
+  { id: 'tab-5', label: 'Preview', type: 'preview' },
+  { id: 'tab-6', label: 'Browser', type: 'browser' },
 ];
 
-const TAB_TYPE_CYCLE = ['dashboard', 'ai', 'ssh', 'preview', 'browser'];
+const TAB_TYPE_CYCLE = ['dashboard', 'ai', 'ssh', 'files', 'preview', 'browser'];
 
 export default function CommandCenter() {
   const [booted, setBooted] = useState(false);

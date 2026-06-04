@@ -1,11 +1,12 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, Monitor, Brain, ServerIcon, FileCode, Globe } from 'lucide-react';
+import { Plus, X, Monitor, Brain, ServerIcon, FileCode, Globe, FolderOpen } from 'lucide-react';
 
 const TAB_ICONS = {
   dashboard: Monitor,
   ai: Brain,
   ssh: ServerIcon,
+  files: FolderOpen,
   preview: FileCode,
   browser: Globe,
 };
