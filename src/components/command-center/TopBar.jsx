@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Wifi, Zap, Clock } from 'lucide-react';
+import { Shield, Wifi, Zap, Clock, Lock, Unlock, Settings } from 'lucide-react';
 
-export default function TopBar() {
+export default function TopBar({ isLocked, onToggleLock, onOpenSettings }) {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -46,6 +46,30 @@ export default function TopBar() {
           <StatusIndicator icon={Shield} label="SECURE" color="text-chart-3" />
           <StatusIndicator icon={Wifi} label="CONNECTED" color="text-primary" />
           <StatusIndicator icon={Zap} label="NOMINAL" color="text-chart-4" />
+        </div>
+
+        {/* Lock & Settings */}
+        <div className="flex items-center gap-1 pl-4 border-l border-primary/10">
+          <button
+            onClick={onToggleLock}
+            title={isLocked ? 'Unlock layout' : 'Lock layout'}
+            className={`flex items-center gap-1 px-2 py-1 rounded-sm border text-[8px] font-display uppercase tracking-wider transition-all ${
+              isLocked
+                ? 'border-chart-4/40 bg-chart-4/10 text-chart-4'
+                : 'border-primary/20 bg-primary/5 text-primary hover:bg-primary/15'
+            }`}
+          >
+            {isLocked ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
+            <span className="hidden lg:block">{isLocked ? 'Locked' : 'Unlock'}</span>
+          </button>
+          <button
+            onClick={onOpenSettings}
+            title="Settings (Ctrl+,)"
+            className="flex items-center gap-1 px-2 py-1 rounded-sm border border-primary/20 bg-primary/5 text-primary hover:bg-primary/15 text-[8px] font-display uppercase tracking-wider transition-all"
+          >
+            <Settings className="w-3 h-3" />
+            <span className="hidden lg:block">Settings</span>
+          </button>
         </div>
 
         <div className="flex items-center gap-2 pl-4 border-l border-primary/10">
