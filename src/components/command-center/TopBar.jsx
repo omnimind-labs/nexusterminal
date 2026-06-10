@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Wifi, Zap, Clock, Lock, Unlock, Settings } from 'lucide-react';
+import { Shield, Wifi, Zap, Clock, Lock, Unlock, Settings, Keyboard } from 'lucide-react';
 
-export default function TopBar({ isLocked, onToggleLock, onOpenSettings }) {
+export default function TopBar({ isLocked, onToggleLock, onOpenSettings, onOpenShortcuts }) {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -69,6 +69,14 @@ export default function TopBar({ isLocked, onToggleLock, onOpenSettings }) {
           >
             <Settings className="w-3 h-3" />
             <span className="hidden lg:block">Settings</span>
+          </button>
+          <button
+            onClick={onOpenShortcuts}
+            title="Keyboard shortcuts (?)"
+            className="flex items-center gap-1 px-2 py-1 rounded-sm border border-primary/20 bg-primary/5 text-primary hover:bg-primary/15 text-[8px] font-display uppercase tracking-wider transition-all"
+          >
+            <Keyboard className="w-3 h-3" />
+            <span className="hidden lg:block">Keys</span>
           </button>
         </div>
 

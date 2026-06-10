@@ -4,7 +4,8 @@ import TabBar from '../components/command-center/TabBar';
 import GridLayout from '../components/command-center/GridLayout';
 import BootSequence from '../components/command-center/BootSequence';
 import SettingsModal from '../components/command-center/SettingsModal';
-import { DEFAULT_PROFILES, loadProfiles, saveProfiles } from '../lib/layoutProfiles';
+import ShortcutsOverlay from '../components/command-center/ShortcutsOverlay';
+import { DEFAULT_PROFILES, WIDGET_REGISTRY, loadProfiles, saveProfiles } from '../lib/layoutProfiles';
 
 const DEFAULT_THEME = {
   accentHsl: '185 100% 50%',
@@ -63,6 +64,7 @@ export default function CommandCenter() {
   const [activeTab, setActiveTab] = useState('tab-1');
   const [isLocked, setIsLocked] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const [theme, setTheme] = useState(loadTheme);
 
   // Apply theme on change
@@ -127,6 +129,24 @@ export default function CommandCenter() {
     setTheme(prev => ({ ...prev, [key]: value }));
   }, []);
 
+  // Toggle a widget in the active profile
+  const handleToggleWidget = useCallback((widgetId) => {
+    setProfiles(prev => {
+      const profile = prev[activeProfileId];
+      if (!profile) return prev;
+      const hasWidget = profile.layout.some(l => l.i === widgetId);
+      let newLayout;
+      if (hasWidget) {
+        if (profile.layout.length <= 1) return prev;
+        newLayout = profile.layout.filter(l => l.i !== widgetId);
+      } else {
+        const maxY = profile.layout.reduce((m, l) => Math.max(m, l.y + l.h), 0);
+        newLayout = [...profile.layout, { i: widgetId, x: 0, y: maxY, w: 8, h: 8, minW: 3, minH: 4 }];
+      }
+      return { ...prev, [activeProfileId]: { ...profile, layout: newLayout } };
+    });
+  }, [activeProfileId]);
+
   const addTab = useCallback(() => {
     const id = `tab-${Date.now()}`;
     const type = TAB_TYPE_CYCLE[tabs.length % TAB_TYPE_CYCLE.length];
@@ -142,20 +162,54 @@ export default function CommandCenter() {
     });
   }, [activeTab]);
 
+  // Widget shortcut map: Alt+1..9 → widget ids in order
+  const WIDGET_SHORTCUT_MAP = Object.keys(WIDGET_REGISTRY).slice(0, 9);
+
   // Keyboard shortcuts
   useEffect(() => {
     const handler = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 't') { e.preventDefault(); addTab(); }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'w') { e.preventDefault(); if (tabs.length > 1) closeTab(activeTab); }
-      if ((e.ctrlKey || e.metaKey) && e.key === ',') { e.preventDefault(); setShowSettings(s => !s); }
-      if (e.ctrlKey) {
+      // Ignore when typing in an input
+      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+
+      if ((e.ctrlKey || e.metaKey) && e.key === 't') { e.preventDefault(); addTab(); return; }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'w') { e.preventDefault(); if (tabs.length > 1) closeTab(activeTab); return; }
+      if ((e.ctrlKey || e.metaKey) && e.key === ',') { e.preventDefault(); setShowSettings(s => !s); return; }
+
+      // Tab switching Ctrl+1–6
+      if (e.ctrlKey && !e.altKey) {
         const n = parseInt(e.key);
-        if (n >= 1 && n <= tabs.length) { e.preventDefault(); setActiveTab(tabs[n - 1].id); }
+        if (n >= 1 && n <= tabs.length) { e.preventDefault(); setActiveTab(tabs[n - 1].id); return; }
+      }
+
+      // Alt+L — toggle lock/edit mode
+      if (e.altKey && e.key.toLowerCase() === 'l') { e.preventDefault(); setIsLocked(l => !l); return; }
+
+      // Alt+1–9 — toggle widgets
+      if (e.altKey && !e.ctrlKey) {
+        const n = parseInt(e.key);
+        if (n >= 1 && n <= 9) {
+          e.preventDefault();
+          const widgetId = WIDGET_SHORTCUT_MAP[n - 1];
+          if (widgetId) handleToggleWidget(widgetId);
+          return;
+        }
+      }
+
+      // ? — show shortcuts overlay (no modifier)
+      if (!e.ctrlKey && !e.altKey && !e.metaKey && e.key === '?') {
+        setShowShortcuts(s => !s);
+        return;
+      }
+
+      // Esc — close any overlay
+      if (e.key === 'Escape') {
+        setShowShortcuts(false);
+        setShowSettings(false);
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [tabs, activeTab, addTab, closeTab]);
+  }, [tabs, activeTab, addTab, closeTab, handleToggleWidget]);
 
   const bodyClass = [
     'h-screen w-screen overflow-hidden bg-background',
@@ -173,6 +227,7 @@ export default function CommandCenter() {
             isLocked={isLocked}
             onToggleLock={() => setIsLocked(l => !l)}
             onOpenSettings={() => setShowSettings(true)}
+            onOpenShortcuts={() => setShowShortcuts(true)}
           />
           <TabBar
             tabs={tabs}
@@ -190,6 +245,10 @@ export default function CommandCenter() {
             />
           </div>
         </>
+      )}
+
+      {showShortcuts && (
+        <ShortcutsOverlay onClose={() => setShowShortcuts(false)} />
       )}
 
       {showSettings && (
