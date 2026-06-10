@@ -17,10 +17,11 @@ import SSHManager from './SSHManager';
 import FilePreview from './FilePreview';
 import WebBrowser from './WebBrowser';
 import FileExplorerWindow from './FileExplorerWindow';
+import CpuMemoryMonitor from './CpuMemoryMonitor';
 
 import {
   Cpu, Terminal as TermIcon, Network, Layers, FolderOpen,
-  Activity, Globe, BarChart3, Sparkles, ServerIcon, FileCode, FolderSearch
+  Activity, Globe, BarChart3, Sparkles, ServerIcon, FileCode, FolderSearch, MemoryStick
 } from 'lucide-react';
 
 const ReactGridLayout = WidthProvider(RGL);
@@ -39,6 +40,7 @@ const WIDGET_CONFIG = {
   filepreview:  { title: 'File Preview',     icon: FileCode,    Component: FilePreview },
   browser:      { title: 'Web Browser',      icon: Globe,       Component: WebBrowser },
   fileexplorer: { title: 'File Explorer',    icon: FolderSearch,Component: FileExplorerWindow },
+  cpumem:       { title: 'CPU & Memory',     icon: MemoryStick, Component: CpuMemoryMonitor },
 };
 
 export default function GridLayout({ layout, onLayoutChange, isLocked }) {

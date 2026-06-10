@@ -15,6 +15,7 @@ export const WIDGET_REGISTRY = {
   filepreview:  { label: 'File Preview',    type: 'filepreview' },
   browser:      { label: 'Web Browser',     type: 'browser' },
   fileexplorer: { label: 'File Explorer',   type: 'fileexplorer' },
+  cpumem:       { label: 'CPU & Memory',    type: 'cpumem' },
 };
 
 export const DEFAULT_PROFILES = {
@@ -29,6 +30,7 @@ export const DEFAULT_PROFILES = {
       { i: 'quickstats', x: 11, y: 14,w: 5,  h: 8,  minW: 3, minH: 5 },
       { i: 'files',      x: 0,  y: 8, w: 5,  h: 6,  minW: 3, minH: 4 },
       { i: 'datastream', x: 0,  y: 14,w: 5,  h: 8,  minW: 3, minH: 4 },
+      { i: 'cpumem',     x: 16, y: 16,w: 8,  h: 10, minW: 5, minH: 7 },
     ],
   },
   ai: {
