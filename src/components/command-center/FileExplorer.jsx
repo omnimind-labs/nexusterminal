@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Folder, FileText, FileCode, FileImage, File, ChevronRight, ArrowUp } from 'lucide-react';
+import { ChevronRight, ArrowUp } from 'lucide-react';
+import { getFileIcon } from '@/utils/fileIcons';
 
 const FILE_TREE = {
   '~': {
@@ -50,16 +51,7 @@ const FILE_TREE = {
   }
 };
 
-const codeExts = ['js', 'jsx', 'ts', 'py', 'go', 'lua', 'sh', 'json', 'toml', 'yml'];
-const imageExts = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'];
 
-function getIcon(item) {
-  if (item.type === 'dir') return Folder;
-  if (codeExts.includes(item.ext)) return FileCode;
-  if (imageExts.includes(item.ext)) return FileImage;
-  if (['pdf', 'md', 'txt', 'xlsx'].includes(item.ext)) return FileText;
-  return File;
-}
 
 export default function FileExplorer() {
   const [path, setPath] = useState(['~']);
@@ -132,7 +124,7 @@ export default function FileExplorer() {
             className="space-y-0.5"
           >
             {sorted.map(([name, item]) => {
-              const Icon = getIcon(item);
+              const Icon = getFileIcon(item);
               const isDir = item.type === 'dir';
               const isSelected = selected === name;
               return (

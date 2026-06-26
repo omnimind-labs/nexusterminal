@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Wifi, Zap, Clock, Lock, Unlock, Settings, Keyboard } from 'lucide-react';
+import { usePollingInterval } from '@/hooks/usePollingInterval';
 
 export default function TopBar({ isLocked, onToggleLock, onOpenSettings, onOpenShortcuts }) {
   const [time, setTime] = useState(new Date());
 
-  useEffect(() => {
-    const interval = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(interval);
-  }, []);
+  usePollingInterval(() => setTime(new Date()), 1000);
 
   const formatTime = (d) => {
     return d.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });

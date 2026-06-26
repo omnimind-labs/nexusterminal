@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
+import { useAutoScroll } from '@/hooks/useAutoScroll';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const FILESYSTEM = {
@@ -76,14 +77,8 @@ export default function Terminal() {
   const [cwd, setCwd] = useState('~');
   const [history, setHistory] = useState([]);
   const [historyIdx, setHistoryIdx] = useState(-1);
-  const scrollRef = useRef(null);
+  const scrollRef = useAutoScroll(lines);
   const inputRef = useRef(null);
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [lines]);
 
   const executeCommand = (cmd) => {
     const trimmed = cmd.trim();

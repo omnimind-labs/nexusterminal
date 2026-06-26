@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock, Loader2, AlertTriangle } from "lucide-react";
+import { Lock, AlertTriangle } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
+import FormError from "@/components/shared/FormError";
+import LoadingButton from "@/components/shared/LoadingButton";
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
@@ -59,11 +60,7 @@ export default function ResetPassword() {
       title="New password"
       subtitle="Enter your new password below"
     >
-      {error && (
-        <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
-          {error}
-        </div>
-      )}
+      <FormError message={error} />
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="password">New Password</Label>
@@ -98,16 +95,9 @@ export default function ResetPassword() {
             />
           </div>
         </div>
-        <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Resetting...
-            </>
-          ) : (
-            "Reset password"
-          )}
-        </Button>
+        <LoadingButton type="submit" loading={loading} loadingText="Resetting...">
+          Reset password
+        </LoadingButton>
       </form>
     </AuthLayout>
   );
