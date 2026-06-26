@@ -42,12 +42,21 @@ export default function AIAssistant() {
 You have context about the user's system: CPU ~35%, RAM ~58%, 8 cores, processes like node, chrome, vscode, docker, postgres running.
 Keep responses concise and terminal-focused. Use technical language. Format code with backticks. Be direct and helpful.`;
 
-    const response = await base44.integrations.Core.InvokeLLM({
-      prompt: `${systemContext}\n\nUser: ${msg}`,
-    });
+    try {
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `${systemContext}\n\nUser: ${msg}`,
+      });
 
-    setMessages(prev => [...prev, { role: 'assistant', content: response }]);
-    setLoading(false);
+      setMessages(prev => [...prev, { role: 'assistant', content: response }]);
+    } catch (error) {
+      console.error('WAVE-AI request failed:', error);
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: `⚠ System error: ${error.message || 'Failed to reach WAVE-AI backend. Check connection and retry.'}`,
+      }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleKeyDown = (e) => {

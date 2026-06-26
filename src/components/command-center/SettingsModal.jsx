@@ -49,7 +49,7 @@ function loadTerminalPrefs() {
 }
 
 function saveTerminalPrefs(prefs) {
-  try { localStorage.setItem(STORAGE_KEY_TERMINAL, JSON.stringify(prefs)); } catch {}
+  try { localStorage.setItem(STORAGE_KEY_TERMINAL, JSON.stringify(prefs)); } catch (error) { console.warn('Failed to save terminal preferences to localStorage:', error); }
 }
 
 export default function SettingsModal({
