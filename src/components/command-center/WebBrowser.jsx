@@ -17,9 +17,14 @@ export default function WebBrowser() {
 
   const navigate = (target) => {
     let resolved = target.trim();
-    if (!resolved.startsWith('http')) {
-      // treat as search
+    if (!resolved.startsWith('http://') && !resolved.startsWith('https://')) {
       resolved = `https://duckduckgo.com/?q=${encodeURIComponent(resolved)}&theme=dark`;
+    }
+    try {
+      const parsed = new URL(resolved);
+      if (!['http:', 'https:'].includes(parsed.protocol)) return;
+    } catch {
+      return;
     }
     setUrl(resolved);
     setInputUrl(resolved);
@@ -111,7 +116,8 @@ export default function WebBrowser() {
           key={key}
           src={url}
           className="w-full h-full border-0"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+          sandbox="allow-scripts allow-forms allow-popups"
+          referrerPolicy="no-referrer"
           onLoad={() => setLoading(false)}
           title="browser"
         />
