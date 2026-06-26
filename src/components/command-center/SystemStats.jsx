@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Cpu, MemoryStick, HardDrive, Thermometer } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { usePollingInterval } from '@/hooks/usePollingInterval';
+import { randomWalk } from '@/utils/randomWalk';
 
 function GaugeRing({ value, label, icon: Icon, color = 'primary', size = 80 }) {
   const radius = (size - 10) / 2;
@@ -79,20 +81,18 @@ export default function SystemStats() {
     uptime: 0,
   });
 
-  useEffect(() => {
-    const startTime = Date.now();
-    const interval = setInterval(() => {
-      setStats(prev => ({
-        cpu: Math.max(5, Math.min(95, prev.cpu + (Math.random() - 0.48) * 8)),
-        ram: Math.max(30, Math.min(90, prev.ram + (Math.random() - 0.5) * 3)),
-        disk: Math.max(40, Math.min(70, prev.disk + (Math.random() - 0.5) * 0.5)),
-        temp: Math.max(35, Math.min(85, prev.temp + (Math.random() - 0.48) * 4)),
-        cores: prev.cores.map(c => Math.max(2, Math.min(98, c + (Math.random() - 0.48) * 15))),
-        uptime: Math.floor((Date.now() - startTime) / 1000),
-      }));
-    }, 1500);
-    return () => clearInterval(interval);
-  }, []);
+  const [startTime] = useState(() => Date.now());
+
+  usePollingInterval(() => {
+    setStats(prev => ({
+      cpu: randomWalk(prev.cpu, { volatility: 8, min: 5, max: 95, bias: 0.02 }),
+      ram: randomWalk(prev.ram, { volatility: 3, min: 30, max: 90 }),
+      disk: randomWalk(prev.disk, { volatility: 0.5, min: 40, max: 70 }),
+      temp: randomWalk(prev.temp, { volatility: 4, min: 35, max: 85, bias: 0.02 }),
+      cores: prev.cores.map(c => randomWalk(c, { volatility: 15, min: 2, max: 98, bias: 0.02 })),
+      uptime: Math.floor((Date.now() - startTime) / 1000),
+    }));
+  }, 1500);
 
   // Keep cores capped to available display space
   const formatUptime = (s) => {

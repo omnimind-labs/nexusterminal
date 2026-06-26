@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { usePollingInterval } from '@/hooks/usePollingInterval';
 
 const STATS = [
   { label: 'PACKETS IN', baseValue: 1247832, rate: 127 },
@@ -13,18 +14,15 @@ const STATS = [
 export default function QuickStats() {
   const [values, setValues] = useState(STATS.map(s => s.baseValue));
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setValues(prev => prev.map((v, i) => {
-        const stat = STATS[i];
-        if (stat.random) {
-          return stat.min + Math.random() * (stat.max - stat.min);
-        }
-        return v + stat.rate + Math.floor(Math.random() * 20);
-      }));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  usePollingInterval(() => {
+    setValues(prev => prev.map((v, i) => {
+      const stat = STATS[i];
+      if (stat.random) {
+        return stat.min + Math.random() * (stat.max - stat.min);
+      }
+      return v + stat.rate + Math.floor(Math.random() * 20);
+    }));
+  }, 1000);
 
   return (
     <div className="grid grid-cols-3 gap-2 h-full content-start overflow-y-auto">

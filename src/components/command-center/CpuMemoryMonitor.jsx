@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { Cpu, MemoryStick } from 'lucide-react';
 
-const MAX_POINTS = 40;
+import { usePollingInterval } from '@/hooks/usePollingInterval';
+import { randomWalk } from '@/utils/randomWalk';
 
-function generatePoint(prev, volatility = 12, min = 5, max = 95) {
-  const delta = (Math.random() - 0.5) * volatility;
-  return Math.min(max, Math.max(min, (prev || 30) + delta));
-}
+const MAX_POINTS = 40;
 
 function initSeries(len, base = 30) {
   return Array.from({ length: len }, (_, i) => ({
@@ -84,32 +82,25 @@ export default function CpuMemoryMonitor() {
   const [memUsed, setMemUsed] = useState(7.2);
   const memTotal = 16;
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const t = tickRef.current++;
+  usePollingInterval(() => {
+    const t = tickRef.current++;
 
-      setCpuData(prev => {
-        const last = prev[prev.length - 1]?.v ?? 35;
-        return [...prev.slice(-MAX_POINTS + 1), { t, v: generatePoint(last, 14, 2, 98) }];
-      });
+    setCpuData(prev => {
+      const last = prev[prev.length - 1]?.v ?? 35;
+      return [...prev.slice(-MAX_POINTS + 1), { t, v: randomWalk(last, { volatility: 14, min: 2, max: 98 }) }];
+    });
 
-      setMemData(prev => {
-        const last = prev[prev.length - 1]?.v ?? 55;
-        return [...prev.slice(-MAX_POINTS + 1), { t, v: generatePoint(last, 5, 20, 90) }];
-      });
+    setMemData(prev => {
+      const last = prev[prev.length - 1]?.v ?? 55;
+      return [...prev.slice(-MAX_POINTS + 1), { t, v: randomWalk(last, { volatility: 5, min: 20, max: 90 }) }];
+    });
 
-      setCpuCores(prev =>
-        prev.map(c => generatePoint(c, 18, 2, 99))
-      );
+    setCpuCores(prev =>
+      prev.map(c => randomWalk(c, { volatility: 18, min: 2, max: 99 }))
+    );
 
-      setMemUsed(prev => {
-        const next = prev + (Math.random() - 0.48) * 0.3;
-        return Math.min(memTotal - 0.5, Math.max(2, next));
-      });
-    }, 800);
-
-    return () => clearInterval(interval);
-  }, []);
+    setMemUsed(prev => randomWalk(prev, { volatility: 0.6, min: 2, max: memTotal - 0.5, bias: -0.01 }));
+  }, 800);
 
   const currentCpu = cpuData[cpuData.length - 1]?.v ?? 0;
   const currentMem = memData[memData.length - 1]?.v ?? 0;

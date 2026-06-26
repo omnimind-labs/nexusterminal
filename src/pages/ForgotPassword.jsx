@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, ArrowLeft, Loader2 } from "lucide-react";
+import { Mail, ArrowLeft } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
+import LoadingButton from "@/components/shared/LoadingButton";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -59,16 +59,9 @@ export default function ForgotPassword() {
               />
             </div>
           </div>
-          <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Sending...
-              </>
-            ) : (
-              "Send reset link"
-            )}
-          </Button>
+          <LoadingButton type="submit" loading={loading} loadingText="Sending...">
+            Send reset link
+          </LoadingButton>
         </form>
       )}
     </AuthLayout>

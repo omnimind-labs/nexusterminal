@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Folder, FolderOpen, FileText, FileCode, FileImage, File, Archive,
   ChevronRight, ArrowUp, ArrowLeft, ArrowRight, RefreshCw, Search,
-  Home, Download, Settings, List, Grid3x3, Info, Terminal,
-  Eye, Copy, Trash2, Edit3, MoreHorizontal, HardDrive, X
+  Home, Download, Settings, List, Grid3x3, Terminal,
+  Eye, Copy, Trash2, Edit3, HardDrive, X
 } from 'lucide-react';
+import { getFileIcon, getFileIconColor } from '@/utils/fileIcons';
 
 // ── Data ────────────────────────────────────────────────────
 const FILE_TREE = {
@@ -95,26 +95,7 @@ const QUICK_ACCESS = [
   { label: '.config',   path: ['~', '.config'],         icon: Settings },
 ];
 
-const CODE_EXTS = new Set(['js','jsx','ts','tsx','py','go','lua','sh','json','toml','yml','yaml','css','html','md','mod','csv']);
-const IMG_EXTS  = new Set(['png','jpg','jpeg','gif','svg','webp']);
-const ARCH_EXTS = new Set(['gz','tar','zip','dmg','AppImage']);
 
-function getIcon(item, open = false) {
-  if (item.type === 'dir') return open ? FolderOpen : Folder;
-  if (IMG_EXTS.has(item.ext))  return FileImage;
-  if (CODE_EXTS.has(item.ext)) return FileCode;
-  if (ARCH_EXTS.has(item.ext)) return Archive;
-  if (['pdf','xlsx','txt'].includes(item.ext)) return FileText;
-  return File;
-}
-
-function getIconColor(item) {
-  if (item.type === 'dir') return 'text-chart-4';
-  if (IMG_EXTS.has(item.ext))  return 'text-accent';
-  if (CODE_EXTS.has(item.ext)) return 'text-primary';
-  if (ARCH_EXTS.has(item.ext)) return 'text-chart-5';
-  return 'text-muted-foreground';
-}
 
 function getNodeAtPath(path) {
   let node = FILE_TREE['~'];
@@ -396,7 +377,7 @@ export default function FileExplorerWindow() {
                 {viewMode === 'list' ? (
                   <div className="space-y-0.5">
                     {sorted.map(([name, item]) => {
-                      const Icon = getIcon(item, false);
+                      const Icon = getFileIcon(item, false);
                       const isDir = item.type === 'dir';
                       const isSel = selected === name;
                       const childCount = isDir ? Object.keys(item.children || {}).length : null;
@@ -411,7 +392,7 @@ export default function FileExplorerWindow() {
                             isSel ? 'bg-primary/10 border border-primary/20' : 'hover:bg-secondary/25'
                           }`}
                         >
-                          <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${getIconColor(item)}`} />
+                          <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${getFileIconColor(item)}`} />
                           <span className={`font-mono text-[10px] flex-1 truncate ${isDir ? 'text-foreground' : 'text-foreground/80'}`}>
                             {name}
                           </span>
@@ -427,7 +408,7 @@ export default function FileExplorerWindow() {
                 ) : (
                   <div className="grid grid-cols-3 gap-2 p-1">
                     {sorted.map(([name, item]) => {
-                      const Icon = getIcon(item, false);
+                      const Icon = getFileIcon(item, false);
                       const isDir = item.type === 'dir';
                       const isSel = selected === name;
                       return (
@@ -441,7 +422,7 @@ export default function FileExplorerWindow() {
                             isSel ? 'bg-primary/10 border border-primary/20' : 'hover:bg-secondary/25'
                           }`}
                         >
-                          <Icon className={`w-8 h-8 ${getIconColor(item)}`} />
+                          <Icon className={`w-8 h-8 ${getFileIconColor(item)}`} />
                           <span className={`font-mono text-[9px] w-full truncate ${isDir ? 'text-foreground' : 'text-foreground/80'}`}>
                             {name}
                           </span>
@@ -494,7 +475,7 @@ export default function FileExplorerWindow() {
 
                 {/* Icon preview */}
                 <div className="flex justify-center">
-                  {(() => { const Icon = getIcon(selectedItem, false); return <Icon className={`w-12 h-12 ${getIconColor(selectedItem)}`} />; })()}
+                  {(() => { const Icon = getFileIcon(selectedItem, false); return <Icon className={`w-12 h-12 ${getFileIconColor(selectedItem)}`} />; })()}
                 </div>
 
                 <div className="space-y-2">

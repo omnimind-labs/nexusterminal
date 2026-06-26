@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
+import { useAutoScroll } from '@/hooks/useAutoScroll';
 import { motion, AnimatePresence } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { Sparkles, Send, Loader2, Trash2 } from 'lucide-react';
@@ -20,14 +21,8 @@ export default function AIAssistant() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const scrollRef = useRef(null);
+  const scrollRef = useAutoScroll(messages);
   const inputRef = useRef(null);
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
 
   const sendMessage = async (text) => {
     const msg = text || input.trim();

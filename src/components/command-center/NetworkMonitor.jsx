@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { AreaChart, Area, ResponsiveContainer, YAxis } from 'recharts';
+import { usePollingInterval } from '@/hooks/usePollingInterval';
+import { randomWalk } from '@/utils/randomWalk';
 
 function TrafficChart({ data, color, label, value }) {
   return (
@@ -45,17 +47,14 @@ export default function NetworkMonitor() {
     { ip: '198.51.100.7', port: 27017, proto: 'TCP', status: 'TIME_WAIT', geo: 'US-West' },
   ]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setDownloadData(prev => [...prev.slice(1), { v: Math.max(5, prev[prev.length - 1].v + (Math.random() - 0.45) * 30) }]);
-      setUploadData(prev => [...prev.slice(1), { v: Math.max(2, prev[prev.length - 1].v + (Math.random() - 0.48) * 15) }]);
-      setConnections(prev => prev.map(c => ({
-        ...c,
-        status: Math.random() > 0.9 ? ['ESTABLISHED', 'LISTENING', 'TIME_WAIT'][Math.floor(Math.random() * 3)] : c.status,
-      })));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  usePollingInterval(() => {
+    setDownloadData(prev => [...prev.slice(1), { v: randomWalk(prev[prev.length - 1].v, { volatility: 30, min: 5, max: 200, bias: 0.05 }) }]);
+    setUploadData(prev => [...prev.slice(1), { v: randomWalk(prev[prev.length - 1].v, { volatility: 15, min: 2, max: 100, bias: 0.02 }) }]);
+    setConnections(prev => prev.map(c => ({
+      ...c,
+      status: Math.random() > 0.9 ? ['ESTABLISHED', 'LISTENING', 'TIME_WAIT'][Math.floor(Math.random() * 3)] : c.status,
+    })));
+  }, 1000);
 
   const dlSpeed = downloadData[downloadData.length - 1]?.v.toFixed(1);
   const ulSpeed = uploadData[uploadData.length - 1]?.v.toFixed(1);

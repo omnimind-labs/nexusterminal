@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePollingInterval } from '@/hooks/usePollingInterval';
+import { randomWalk } from '@/utils/randomWalk';
 
 const INITIAL_PROCESSES = [
   { pid: 1, name: 'systemd', user: 'root', cpu: 0.1, mem: 0.4, threads: 1, state: 'sleeping' },
@@ -18,16 +20,13 @@ export default function ProcessList() {
   const [processes, setProcesses] = useState(INITIAL_PROCESSES);
   const [sortBy, setSortBy] = useState('cpu');
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setProcesses(prev => prev.map(p => ({
-        ...p,
-        cpu: Math.max(0, Math.min(99, p.cpu + (Math.random() - 0.5) * (p.name === 'node' ? 6 : 2))),
-        mem: Math.max(0.1, Math.min(30, p.mem + (Math.random() - 0.5) * 0.5)),
-      })));
-    }, 2000);
-    return () => clearInterval(interval);
-  }, []);
+  usePollingInterval(() => {
+    setProcesses(prev => prev.map(p => ({
+      ...p,
+      cpu: randomWalk(p.cpu, { volatility: p.name === 'node' ? 6 : 2, min: 0, max: 99 }),
+      mem: randomWalk(p.mem, { volatility: 0.5, min: 0.1, max: 30 }),
+    })));
+  }, 2000);
 
   const sorted = [...processes].sort((a, b) => b[sortBy] - a[sortBy]);
 
