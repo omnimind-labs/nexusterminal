@@ -18,7 +18,8 @@ export default function ForgotPassword() {
     try {
       await base44.auth.resetPasswordRequest(email);
     } catch {
-      // Always show success regardless
+      // Intentionally swallowed: always show a success message regardless of whether
+      // the email exists. This prevents user-enumeration attacks.
     } finally {
       setLoading(false);
       setSent(true);

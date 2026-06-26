@@ -70,7 +70,7 @@ export default function CommandCenter() {
   // Apply theme on change
   useEffect(() => {
     applyTheme(theme);
-    try { localStorage.setItem('wave_cmd_theme', JSON.stringify(theme)); } catch {}
+    try { localStorage.setItem('wave_cmd_theme', JSON.stringify(theme)); } catch (error) { console.warn('Failed to persist theme to localStorage:', error); }
   }, [theme]);
 
   // Persist profiles whenever they change

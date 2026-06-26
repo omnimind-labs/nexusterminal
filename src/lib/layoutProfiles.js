@@ -89,7 +89,8 @@ export function loadProfiles() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : null;
-  } catch {
+  } catch (error) {
+    console.warn('Failed to load layout profiles from localStorage:', error);
     return null;
   }
 }
@@ -97,5 +98,7 @@ export function loadProfiles() {
 export function saveProfiles(profiles) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles));
-  } catch {}
+  } catch (error) {
+    console.warn('Failed to save layout profiles to localStorage:', error);
+  }
 }
